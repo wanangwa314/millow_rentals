@@ -16,6 +16,10 @@ const config: Config = {
       fontFamily: {
         kanit: ["Kanit", "sans"],
       },
+      width: {
+        "90": "22rem",
+        "128": "36rem",
+      },
     },
   },
   plugins: [],
