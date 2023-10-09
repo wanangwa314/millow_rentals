@@ -6,10 +6,15 @@ import { useState } from "react";
 import Slider from "../Property/Slider";
 import Favourite from "../Property/Favourite";
 
-export default function PropertyCard() {
+type TPropertyCard = {
+  PropertyID: string;
+  Place: string;
+};
+
+export default function PropertyCard(props: TPropertyCard) {
   return (
     <div className="w-90 rounded shadow-lg bg-white relative">
-      <Link href="#" className="">
+      <Link href={`/properties/${props.Place}/${props.PropertyID}`}>
         <Slider />
         <div className="ml-3 mt-3">
           <span className="text-base font-bold mb-1 block">k1500/mo</span>

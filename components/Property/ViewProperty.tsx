@@ -10,7 +10,7 @@ import ViewPropertyDetails from "./ViewPropertyDetails";
 import { useState } from "react";
 
 type TViewProperty = {
-  isOpen: boolean;
+  propertyID: string;
   onClose: () => void;
 };
 
@@ -22,11 +22,7 @@ export default function ViewProperty(props: TViewProperty) {
   };
 
   return (
-    <div
-      className={`w-screen h-screen bg-opacity-25 bg-black fixed inset-0 ${
-        props.isOpen ? "" : "hidden"
-      }`}
-    >
+    <div className="w-screen h-screen bg-opacity-25 bg-black fixed inset-0">
       <button className="absolute top-2 right-4" onClick={props.onClose}>
         <FontAwesomeIcon icon={faXmark} size="2x" />
       </button>
