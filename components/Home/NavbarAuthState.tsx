@@ -2,12 +2,11 @@
 import { createClientComponentClient } from "@supabase/auth-helpers-nextjs";
 //import { supabase } from "@/lib/supabase";
 import { useState, useEffect } from "react";
-import { cookies } from "next/headers";
 import Image from "next/image";
+import { useAuth } from "@/lib/AuthContext";
 
 export default function NavbarAuthState() {
-  const [session, setSession] = useState<any | null>(null);
-
+  const { userSession } = useAuth();
   const supabase = createClientComponentClient();
 
   const signIn = async () => {
@@ -16,23 +15,12 @@ export default function NavbarAuthState() {
     });
   };
 
-  useEffect(() => {
-    const fetchUser = async () => {
-      const {
-        data: { session },
-      } = await supabase.auth.getSession();
-      setSession(session);
-    };
-
-    fetchUser();
-  }, []);
-
   return (
     <div>
-      {session ? (
+      {userSession ? (
         <div className="flex items-center gap-1.5">
           <Image
-            src={session.user.user_metadata.picture}
+            src={userSession.user.user_metadata.picture}
             width={30}
             height={30}
             alt="Pro picture"
