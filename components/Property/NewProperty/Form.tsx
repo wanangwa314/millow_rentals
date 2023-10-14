@@ -1,7 +1,29 @@
+"use client";
+
 import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
 import * as z from "zod";
-import { useForm, SubmitHandler } from "react-hook-form";
-import { Button } from "@/components/ui/button";
+
+const formSchema = z.object({
+  coordinates: z.string(),
+  short_overview: z
+    .string()
+    .max(100, { message: "Overview should be less that 200 character" }),
+  description: z
+    .string()
+    .min(200, { message: "Description should be atleast 200 characters." }),
+  type: z.string().max(20, { message: "Must be 20 characters long or less." }),
+  number_of_bedrooms: z.number(),
+  number_of_bathrooms: z.number(),
+  amenities: z
+    .string()
+    .min(200, { message: "Description should be atleast 200 characters." }),
+  availability_date: z.date(),
+  rent_amount: z.number(),
+  posted_by: z.string(),
+  lease_term: z.number(),
+});
+
 import {
   Form,
   FormControl,
@@ -11,65 +33,175 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-
 import { Input } from "@/components/ui/input";
-import propertySchema from "@/lib/Form Schemas/propertySchema"; // Import the Zod schema
-import ImageInput from "./ImageInput"; // Import the ImageInput component
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { DataSent } from "@/lib/types/Property";
+import { supabase } from "@/lib/supabase";
+import { useEffect, useState } from "react";
+import { useAuth } from "@/lib/AuthContext";
 
-export default function propertyForm() {
-  const { register, handleSubmit } = useForm();
-  const [createProperty] = useMutation(
-    "INSERT INTO properties (...) VALUES (...)"
-  );
+type TNewPropertyForm = {
+  className?: string;
+  onFormDataSent: (data: DataSent) => void;
+};
 
-  const onSubmit: SubmitHandler<FormData> = async (data) => {
-    const { coordinates, description, type, pictures, ...otherFields } = data;
+export default function ProperForm(props: TNewPropertyForm) {
+  const { user } = useAuth();
 
-    const propertyData = {
-      coordinates,
-      description,
-      type,
-      pictures,
-      ...otherFields,
-    };
+  // 1. Define your form.
 
-    // Validate using Zod schema
-    try {
-      const validatedData = propertySchema.parse(propertyData);
-      // Insert data into the properties table
-      await createProperty({ variables: { ...validatedData } });
-      alert("Property added successfully!");
-    } catch (error) {
-      console.error("Validation failed:", error.errors);
-    }
-  };
-
-  const form = useForm<z.infer<typeof propertySchema>>({
-    resolver: zodResolver(propertySchema),
+  const pointData = { latitude: -15.4164381, longitude: 28.1789347 };
+  const formattedCoordinates = `(${pointData.latitude},${pointData.longitude})`;
+  const form = useForm<z.infer<typeof formSchema>>({
+    resolver: zodResolver(formSchema),
     defaultValues: {
-      username: "",
+      description: "",
+      amenities: "",
+      short_overview: "",
+      type: "",
+      number_of_bathrooms: 3,
+      number_of_bedrooms: 4,
+      rent_amount: 1500,
+      coordinates: formattedCoordinates,
+      availability_date: new Date(),
+      posted_by: "",
+      lease_term: 4,
     },
   });
+
+  // 2. Define a submit handler.
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    //Edit values by adding posted by
+    if (user?.id) {
+      values.posted_by = user?.id;
+    }
+    try {
+      console.log("Adding data...");
+      const { data, error } = await supabase
+        .from("properties")
+        .insert(values)
+        .select();
+
+      if (error) {
+        throw new Error(`Supabase error: ${error.message}`);
+      }
+
+      if (data) {
+        console.log("Adding images to ID: " + data[0].id);
+        props.onFormDataSent({ Sent: true, EntryID: data[0].id });
+      } else {
+        throw new Error("Insert did not return data");
+      }
+    } catch (error) {
+      // Handle specific errors
+      if (error instanceof Error) {
+        console.error("An error occurred:", error.message);
+        // You can display an error message to the user or log it to a service
+      } else {
+        console.error("An unknown error occurred:", error);
+      }
+    }
+  }
+
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-8">
+      <form
+        onSubmit={form.handleSubmit(onSubmit)}
+        className={`${props.className} space-y-8`}
+      >
         <FormField
           control={form.control}
-          name="username"
+          name="short_overview"
           render={({ field }) => (
             <FormItem>
-              <FormLabel>Username</FormLabel>
+              <FormLabel>Brief Overview</FormLabel>
               <FormControl>
-                <Input placeholder="shadcn" {...field} />
+                <Input {...field} />
               </FormControl>
-              <FormDescription>
-                This is your public display name.
-              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
         />
-        <Button type="submit">Submit</Button>
+        <FormField
+          control={form.control}
+          name="description"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Description</FormLabel>
+              <FormControl>
+                <Textarea {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="amenities"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Amenities</FormLabel>
+              <FormControl>
+                <Textarea {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="type"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Type</FormLabel>
+              <FormControl>
+                <Input {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="number_of_bedrooms"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Number of bedrooms</FormLabel>
+              <FormControl>
+                <Input type="number" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="number_of_bathrooms"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Number of bedrooms</FormLabel>
+              <FormControl>
+                <Input type="number" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="rent_amount"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Rent amount</FormLabel>
+              <FormControl>
+                <Input type="number" {...field} />
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <Button type="submit">Save</Button>
       </form>
     </Form>
   );
