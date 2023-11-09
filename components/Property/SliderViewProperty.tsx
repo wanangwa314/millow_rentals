@@ -31,13 +31,13 @@ export default function SliderViewProperty(props: SliderViewPropertyProps) {
   const [imagesLoaded, setImagesLoaded] = useState<number>(0);
 
   const images = [
-    "https://images.unsplash.com/photo-1509721434272-b79147e0e708?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1500&q=80",
-    "https://images.unsplash.com/photo-1506710507565-203b9f24669b?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1536&q=80",
-    "https://images.unsplash.com/photo-1536987333706-fc9adfb10d91?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1500&q=80",
+    "https://photos.zillowstatic.com/fp/df7032caa9ec4c5347c2d294f5808406-cc_ft_768.webp",
+    "https://photos.zillowstatic.com/fp/00724957d5120240d1e33a4cf81aaf2a-cc_ft_1536.webp",
+    "https://photos.zillowstatic.com/fp/f3448199104685c19d407e697db64b4d-cc_ft_768.webp",
   ];
 
   const handleOnImageLoadComplete = () => {
-    setImagesLoaded(imagesLoaded + 1);
+    setImagesLoaded((prev) => prev + 1);
   };
 
   useEffect(() => {
@@ -63,6 +63,7 @@ export default function SliderViewProperty(props: SliderViewPropertyProps) {
               className="object-cover"
               onLoadingComplete={handleOnImageLoadComplete}
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={true}
             />
           </div>
         ))}

@@ -11,9 +11,9 @@ export default function ViewPropertyActions() {
       <button className="border border-blue-700 text-blue-700 px-4 py-2 rounded mr-4 hover:bg-blue-800 hover:text-white active:bg-blue-500 ">
         Request to tour
       </button>
-      <button className="mr-4 text-blue-700 hover:text-blue-800">
+      <span className="mr-4 text-blue-700 hover:text-blue-800">
         <Favourite /> Save
-      </button>
+      </span>
       <button className="text-blue-700 hover:text-blue-800 active:text-blue-500">
         <FontAwesomeIcon icon={faShare} size="xl" /> Share
       </button>

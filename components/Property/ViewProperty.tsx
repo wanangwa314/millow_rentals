@@ -22,7 +22,7 @@ export default function ViewProperty(props: TViewProperty) {
   };
 
   return (
-    <div className="w-screen h-screen bg-opacity-25 bg-black fixed inset-0">
+    <div className="w-screen h-screen bg-opacity-25 bg-black fixed inset-0 z-50">
       <button className="absolute top-2 right-4" onClick={props.onClose}>
         <FontAwesomeIcon icon={faXmark} size="2x" />
       </button>
@@ -32,14 +32,15 @@ export default function ViewProperty(props: TViewProperty) {
           NumberImages={3}
           className="lg:w-7/12 h-52 md:h-80 lg:h-full"
         />
-        {imagesLoaded ? (
-          <div className="flex flex-col justify-start">
-            <ViewPropertyActions />
-            <ViewPropertyDetails />
-          </div>
+        <div className="flex flex-col justify-start">
+          <ViewPropertyActions />
+          <ViewPropertyDetails />
+        </div>
+        {/* {imagesLoaded ? (
+          
         ) : (
           <>Loading...</>
-        )}
+        )} */}
       </div>
     </div>
   );

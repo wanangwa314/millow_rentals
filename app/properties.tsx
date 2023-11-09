@@ -1,4 +1,4 @@
-import PropertyCard from "@/components/Home/PropertyCard";
+import PropertyCard from "@/components/Property/PropertyCard";
 import ViewProperty from "@/components/Property/ViewProperty";
 import { useRouter } from "next/router";
 import { useState, useEffect } from "react";
