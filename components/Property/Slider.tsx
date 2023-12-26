@@ -16,6 +16,8 @@ export default function Slider() {
       <Slide
         arrows={false}
         onChange={(from: number, to: number) => setSlideNumber(to + 1)}
+        autoplay={false}
+        transitionDuration={100}
       >
         {images.map((url: string, index: number) => (
           <div className="w-80 h-40 relative aspect-video" key={index}>
