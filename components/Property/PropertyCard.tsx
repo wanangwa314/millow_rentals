@@ -15,11 +15,8 @@ type TPropertyCard = {
 export default function PropertyCard(props: TPropertyCard) {
   async function getData() {
     const res = await fetch("https://api.example.com/...");
-    // The return value is *not* serialized
-    // You can return Date, Map, Set, etc.
 
     if (!res.ok) {
-      // This will activate the closest `error.js` Error Boundary
       throw new Error("Failed to fetch data");
     }
 
@@ -35,8 +32,8 @@ export default function PropertyCard(props: TPropertyCard) {
           <span className="text-xs block">2 bd | 2 ba | 100 sqm</span>
           <span className="text-xs block">Lusaka, Kabwata, Plot 3457</span>
         </div>
-        <Favourite className="absolute top-3.5 right-3 text-white" />
       </Link>
+      <Favourite className="absolute top-3.5 right-3 text-white w-5" />
     </div>
   );
 }
