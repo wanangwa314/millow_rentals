@@ -5,9 +5,20 @@ import {
   faLocationDot,
 } from "@fortawesome/free-solid-svg-icons";
 import { ChangeEvent, useState } from "react";
+import { useRouter } from 'next/navigation'
 
-export default function Searchbar() {
-  const [suggestions, setSuggestions] = useState<string[]>([]);
+type SearchBarProps = {
+  className: string
+}
+
+type Suggestion = {
+  place_id: string,
+  description: string,
+}
+
+export default function Searchbar(props: SearchBarProps) {
+  const [suggestions, setSuggestions] = useState<Suggestion[]>([]);
+  const router = useRouter();
 
   const handleGetSuggestions = async (e: ChangeEvent<HTMLInputElement>) => {
     e.preventDefault();
@@ -19,16 +30,18 @@ export default function Searchbar() {
   };
 
   //TODO: Add open post locations page
-  const handleOpenLocation = () => {};
+  const handleOpenLocation = (placeId: string) => {
+    router.push(`/view/${placeId}`);
+  };
 
   return (
-    <div className="bg-white rounded w-128">
+    <div className={`bg-white rounded w-[500px] ${props.className}`}>
       <div className="flex items-center px-2 h-20">
         <input
           type="text"
           onChange={(e) => handleGetSuggestions(e)}
           className="outline-none flex-1 mx-4 text-slate-800 bg-white text-base"
-          placeholder="Enter address, neighbour or city"
+          placeholder="Enter address, neighbourhood or city"
         />
         <FontAwesomeIcon
           icon={faMagnifyingGlass}
@@ -36,19 +49,19 @@ export default function Searchbar() {
         />
       </div>
 
-      <div className="text-base">
+      <div className="text-base shadow-md">
         <ul className="border-t border-grey-400">
-          {suggestions.map((suggestion: string, index) => (
+          {suggestions.map((suggestion: Suggestion , index) => (
             <li
               key={index}
               className="py-3.5 px-2 flex items-center cursor-pointer hover:bg-slate-200 active:bg-slate-400"
-              onClick={() => handleOpenLocation()}
+              onClick={() => handleOpenLocation(suggestion.place_id)}
             >
               <FontAwesomeIcon
                 icon={faLocationDot}
                 className="flex-none mr-2"
               />
-              <span className="flex-1">{suggestion}</span>
+              <span className="flex-1">{suggestion.description}</span>
             </li>
           ))}
         </ul>
