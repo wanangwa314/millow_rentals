@@ -9,8 +9,23 @@ export async function GET(request: Request) {
   );
   const resJson = await res.json();
   const descriptions = resJson.predictions.map(
-    (prediction: IPrediction) => prediction.description
-  );
+    // (prediction: IPrediction) => prediction.description
+    (prediction: IPrediction) => {
+      return filterByCountry("Zambia", prediction)
+    }
+  )
+  .filter((description: string) => description !== null)
+
 
   return NextResponse.json({ descriptions });
+}
+
+const filterByCountry = (country: string, prediction: IPrediction) => {
+  if (prediction.terms.some(term => term.value.includes(country))){
+    return {
+      "place_id": prediction.place_id,
+      "description": prediction.description
+    }
+  }
+  return null;
 }
