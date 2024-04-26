@@ -22,7 +22,7 @@ export default function Page({ params }: { params: { slug: string[] } }) {
   return (
     <div>
       <Navbar />
-      Place: {params.slug[0]} Property: {params.slug[1]}
+      {/* Place: {params.slug[0]} Property: {params.slug[1]} */}
       {showViewProperty && (
         <ViewProperty propertyID={params.slug[0]} onClose={handleCloseVP} />
       )}

@@ -13,15 +13,8 @@ const formSchema = z.object({
     .string()
     .min(200, { message: "Description should be atleast 200 characters." }),
   type: z.string().max(20, { message: "Must be 20 characters long or less." }),
-  number_of_bedrooms: z.number(),
-  number_of_bathrooms: z.number(),
-  amenities: z
-    .string()
-    .min(200, { message: "Description should be atleast 200 characters." }),
   availability_date: z.date(),
   rent_amount: z.number(),
-  posted_by: z.string(),
-  lease_term: z.number(),
 });
 
 import {
@@ -57,30 +50,30 @@ export default function ProperForm(props: TNewPropertyForm) {
     resolver: zodResolver(formSchema),
     defaultValues: {
       description: "",
-      amenities: "",
       short_overview: "",
       type: "",
-      number_of_bathrooms: 3,
-      number_of_bedrooms: 4,
       rent_amount: 1500,
       coordinates: formattedCoordinates,
       availability_date: new Date(),
-      posted_by: "",
-      lease_term: 4,
     },
   });
 
   // 2. Define a submit handler.
   async function onSubmit(values: z.infer<typeof formSchema>) {
+    const values_copy = {
+      ...values,
+      "posted_by": ""
+    }
+
     //Edit values by adding posted by
     if (user?.id) {
-      values.posted_by = user?.id;
+      values_copy.posted_by = user.id
     }
     try {
       console.log("Adding data...");
       const { data, error } = await supabase
         .from("properties")
-        .insert(values)
+        .insert(values_copy)
         .select();
 
       if (error) {
@@ -138,51 +131,12 @@ export default function ProperForm(props: TNewPropertyForm) {
         />
         <FormField
           control={form.control}
-          name="amenities"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Amenities</FormLabel>
-              <FormControl>
-                <Textarea {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
           name="type"
           render={({ field }) => (
             <FormItem>
               <FormLabel>Type</FormLabel>
               <FormControl>
                 <Input {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="number_of_bedrooms"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Number of bedrooms</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
-        <FormField
-          control={form.control}
-          name="number_of_bathrooms"
-          render={({ field }) => (
-            <FormItem>
-              <FormLabel>Number of bedrooms</FormLabel>
-              <FormControl>
-                <Input type="number" {...field} />
               </FormControl>
               <FormMessage />
             </FormItem>
